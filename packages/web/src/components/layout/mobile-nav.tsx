@@ -44,7 +44,7 @@ function repoNavItems(repoId: string) {
   return [
     { label: "Overview", href: `/repos/${repoId}/overview`, icon: Activity },
     { label: "Chat", href: `/repos/${repoId}`, icon: MessageSquare, exact: true },
-    { label: "Docs", href: `/repos/${repoId}/docs`, icon: BookOpen },
+    { label: "Wiki", href: `/repos/${repoId}/docs`, icon: BookOpen },
     { label: "Search", href: `/repos/${repoId}/search`, icon: Search },
     { label: "Graph", href: `/repos/${repoId}/graph`, icon: GitBranch },
     { label: "Symbols", href: `/repos/${repoId}/symbols`, icon: Code2 },
@@ -282,7 +282,7 @@ export function MobileNav({ repos = [], workspace }: MobileNavProps) {
           </ScrollArea>
 
           <div className="border-t border-[var(--color-border-default)] px-4 py-3">
-            <p className="text-xs text-[var(--color-text-tertiary)]">repowise v0.1.0</p>
+            <p className="text-xs text-[var(--color-text-tertiary)]">repowise v0.12.0</p>
           </div>
         </SheetContent>
       </Sheet>
