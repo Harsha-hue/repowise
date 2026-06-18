@@ -634,6 +634,7 @@ function TreeItem({
   toggleDir,
   onSelectPage,
   forceExpand = false,
+  showFreshness = false,
 }: {
   node: TreeNode;
   depth: number;
@@ -643,6 +644,8 @@ function TreeItem({
   onSelectPage: (page: DocPage) => void;
   /** Open every dir while a search is active so matches are never hidden. */
   forceExpand?: boolean;
+  /** Per-row freshness dots are opt-in — off by default to keep rows quiet. */
+  showFreshness?: boolean;
 }) {
   const isExpanded = forceExpand || expandedDirs.has(node.path);
   const isSelected = node.page && node.page.id === selectedPageId;
@@ -658,7 +661,7 @@ function TreeItem({
           }}
           {...(node.page && node.page.title !== node.name ? { title: node.page.title } : {})}
           className={cn(
-            "flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-left text-xs transition-colors hover:bg-[var(--color-bg-elevated)]",
+            "flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-left text-xs transition-colors hover:bg-[var(--color-bg-elevated)]",
             isSelected
               ? "bg-[var(--color-accent-muted)] text-[var(--color-accent-primary)]"
               : "text-[var(--color-text-secondary)]",
@@ -702,12 +705,12 @@ function TreeItem({
               (node.path === ONBOARDING_DIR_KEY || node.path.startsWith("@section:")) &&
                 "text-[var(--color-text-primary)]",
               node.path.startsWith("@section:") &&
-                "text-[11px] uppercase tracking-wider",
+                "text-xs uppercase tracking-wider",
             )}
           >
             {node.name}
           </span>
-          {node.page && (
+          {showFreshness && node.page && (
             <FreshnessDot status={node.page.freshness_status as FreshnessStatus} />
           )}
         </button>
@@ -724,6 +727,7 @@ function TreeItem({
                 toggleDir={toggleDir}
                 onSelectPage={onSelectPage}
                 forceExpand={forceExpand}
+                showFreshness={showFreshness}
               />
             ))}
           </div>
@@ -738,7 +742,7 @@ function TreeItem({
       onClick={() => node.page && onSelectPage(node.page)}
       {...(node.page && node.page.title !== node.name ? { title: node.page.title } : {})}
       className={cn(
-        "flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-left text-xs transition-colors hover:bg-[var(--color-bg-elevated)]",
+        "flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-left text-xs transition-colors hover:bg-[var(--color-bg-elevated)]",
         isSelected
           ? "bg-[var(--color-accent-muted)] text-[var(--color-accent-primary)]"
           : "text-[var(--color-text-secondary)]",
@@ -753,7 +757,7 @@ function TreeItem({
         )}
       />
       <span className="truncate">{node.name}</span>
-      {node.page && (
+      {showFreshness && node.page && (
         <FreshnessDot status={node.page.freshness_status as FreshnessStatus} />
       )}
     </button>
@@ -817,6 +821,9 @@ export function DocsTree({ pages, selectedPageId, onSelectPage, className }: Doc
   // Filters are a power-user affordance — start hidden so the panel opens
   // calm; the funnel button shows a count when any filter is active.
   const [showFilters, setShowFilters] = useState(false);
+  // Per-row freshness dots are opt-in noise — off by default. Turning this on
+  // (or filtering by status) is how a reader audits staleness across the tree.
+  const [showFreshness, setShowFreshness] = useState(false);
 
   const tree = useMemo(
     () => (viewMode === "domain" ? buildDomainTree(pages) : buildTree(pages)),
@@ -857,7 +864,7 @@ export function DocsTree({ pages, selectedPageId, onSelectPage, className }: Doc
               key={mode}
               onClick={() => setViewMode(mode)}
               className={cn(
-                "flex flex-1 items-center justify-center gap-1.5 rounded px-2 py-1 text-[11px] font-medium transition-colors",
+                "flex flex-1 items-center justify-center gap-1.5 rounded px-2 py-1 text-xs font-medium transition-colors",
                 viewMode === mode
                   ? "bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] shadow-sm"
                   : "text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]",
@@ -892,7 +899,7 @@ export function DocsTree({ pages, selectedPageId, onSelectPage, className }: Doc
           >
             <Filter className="h-3.5 w-3.5" />
             {activeFilterCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[var(--color-accent-fill)] text-[9px] font-semibold text-[var(--color-text-on-accent)]">
+              <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[var(--color-accent-fill)] text-[10px] font-semibold text-[var(--color-text-on-accent)]">
                 {activeFilterCount}
               </span>
             )}
@@ -937,6 +944,15 @@ export function DocsTree({ pages, selectedPageId, onSelectPage, className }: Doc
                 </button>
               ))}
             </div>
+            <label className="flex items-center gap-1.5 text-[10px] text-[var(--color-text-tertiary)] cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={showFreshness}
+                onChange={(e) => setShowFreshness(e.target.checked)}
+                className="h-3 w-3 accent-[var(--color-accent-primary)]"
+              />
+              Show freshness dots on every row
+            </label>
           </div>
         )}
 
@@ -971,7 +987,7 @@ export function DocsTree({ pages, selectedPageId, onSelectPage, className }: Doc
             <p>No matching pages</p>
           </div>
         ) : (
-          <div className="space-y-0.5">
+          <div className="space-y-1">
             {filteredTree.map((node) => (
               <TreeItem
                 key={node.path}
@@ -982,6 +998,7 @@ export function DocsTree({ pages, selectedPageId, onSelectPage, className }: Doc
                 toggleDir={toggleDir}
                 onSelectPage={onSelectPage}
                 forceExpand={search.trim().length > 0}
+                showFreshness={showFreshness || freshnessFilter !== "all"}
               />
             ))}
           </div>

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-/** Legacy route — redirects into the consolidated IA. */
+/** Legacy route — security now lives as a Code Health tab. */
 export default async function LegacyRedirect({
   params,
 }: {

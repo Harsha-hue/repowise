@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { X } from "lucide-react";
 import useSWRInfinite from "swr/infinite";
 import { SymbolTable, type SymbolFilters } from "@repowise-dev/ui/symbols/symbol-table";
-import { HotSymbolsBoard, type HotSymbol } from "@repowise-dev/ui/symbols/hot-symbols-board";
 import { SymbolDrawerWrapper } from "./symbol-drawer-wrapper";
 import { listSymbolsPage, type SymbolSortKey } from "@/lib/api/symbols";
 import { useDebounce } from "@/lib/hooks/use-debounce";
@@ -77,25 +76,11 @@ export function SymbolTableWrapper({ repoId }: Props) {
   const total = data && data.length > 0 ? data[0].total : 0;
   const hasMore = data ? data[data.length - 1].has_more : false;
 
-  // Hot symbols board — uses the same server-ranked stream so it matches
-  // the table's order. We just take the top of the first page.
-  const hotSymbols: HotSymbol[] = useMemo(() => {
-    const firstPage = data && data.length > 0 ? data[0].items : [];
-    return firstPage
-      .filter((s) => (s.importance_score ?? 0) > 0)
-      .slice(0, 8)
-      .map((s) => ({
-        symbol: s,
-        score: s.importance_score ?? 0,
-        pagerank: s.file_pagerank ?? 0,
-      }));
-  }, [data]);
-
   return (
     <div className="space-y-6">
       {fileFilter && (
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-accent-primary)]/40 bg-[var(--color-accent-muted)] px-2.5 py-1 text-[11px] font-mono text-[var(--color-accent-primary)]">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-accent-primary)]/40 bg-[var(--color-accent-muted)] px-2.5 py-1 text-xs font-mono text-[var(--color-accent-primary)]">
             {fileFilter}
             <button
               type="button"
@@ -106,13 +91,10 @@ export function SymbolTableWrapper({ repoId }: Props) {
               <X className="h-3 w-3" />
             </button>
           </span>
-          <span className="text-[11px] text-[var(--color-text-tertiary)]">
+          <span className="text-xs text-[var(--color-text-tertiary)]">
             showing symbols in this file only
           </span>
         </div>
-      )}
-      {hotSymbols.length > 0 && (
-        <HotSymbolsBoard items={hotSymbols} onSelect={setSelected} />
       )}
       <SymbolTable
         items={items}

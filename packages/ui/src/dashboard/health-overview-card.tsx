@@ -65,7 +65,7 @@ function TrendChip({ delta }: { delta: number | null | undefined }) {
   const Icon = up ? TrendingUp : TrendingDown;
   return (
     <span
-      className="inline-flex items-center gap-0.5 text-[11px] font-medium tabular-nums"
+      className="inline-flex items-center gap-0.5 text-xs font-medium tabular-nums"
       style={{ color: up ? "var(--color-success)" : "var(--color-error)" }}
       title={`${up ? "+" : ""}${delta.toFixed(2)} vs previous snapshot`}
     >
@@ -112,6 +112,66 @@ function Sparkline({ points }: { points: number[] }) {
   );
 }
 
+/** Severity-mix donut whose center is the open-findings headline count. */
+function SeverityDonut({
+  segments,
+  total,
+  count,
+}: {
+  segments: { key: string; count: number; color: string }[];
+  total: number;
+  count: number;
+}) {
+  const size = 88;
+  const stroke = 10;
+  const radius = (size - stroke) / 2;
+  const circ = 2 * Math.PI * radius;
+  let offset = 0;
+
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="var(--color-bg-inset)"
+          strokeWidth={stroke}
+        />
+        {total > 0 &&
+          segments.map((s) => {
+            const len = (s.count / total) * circ;
+            const dash = `${len} ${circ - len}`;
+            const el = (
+              <circle
+                key={s.key}
+                cx={size / 2}
+                cy={size / 2}
+                r={radius}
+                fill="none"
+                stroke={s.color}
+                strokeWidth={stroke}
+                strokeDasharray={dash}
+                strokeDashoffset={-offset}
+              />
+            );
+            offset += len;
+            return el;
+          })}
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-lg font-bold tabular-nums leading-none text-[var(--color-text-primary)]">
+          {count.toLocaleString()}
+        </span>
+        <span className="text-[10px] uppercase tracking-wider text-[var(--color-text-tertiary)]">
+          findings
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function MetricTile({
   icon,
   label,
@@ -129,7 +189,7 @@ function MetricTile({
 }) {
   return (
     <div className="flex flex-col gap-1.5 px-4 py-3.5">
-      <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-[var(--color-text-tertiary)]">
+      <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-[var(--color-text-tertiary)]">
         {icon}
         {label}
       </div>
@@ -147,7 +207,7 @@ function MetricTile({
           <div className="flex items-center justify-between gap-2">
             {b && (
               <span
-                className="text-[11px] font-medium uppercase tracking-wide"
+                className="text-xs font-medium uppercase tracking-wide"
                 style={{ color: b.color }}
               >
                 {b.label}
@@ -191,7 +251,7 @@ export function HealthOverviewCard({
   const hasData = avg != null || hot != null;
 
   return (
-    <Card className={`overflow-hidden shadow-sm ${className ?? ""}`}>
+    <Card className={`overflow-hidden ${className ?? ""}`}>
       <CardHeader className="pb-2">
         <CardTitle className="text-sm flex items-center justify-between">
           <span className="flex items-center gap-2">
@@ -200,7 +260,7 @@ export function HealthOverviewCard({
           </span>
           <a
             href={reportHref}
-            className="inline-flex items-center gap-1 text-[11px] font-normal text-[var(--color-accent-primary)] hover:underline"
+            className="inline-flex items-center gap-1 text-xs font-normal text-[var(--color-accent-primary)] hover:underline"
           >
             View report <ArrowRight className="h-3 w-3" />
           </a>
@@ -236,36 +296,26 @@ export function HealthOverviewCard({
 
             {/* Findings + worst performer */}
             <div className="px-4 py-3.5 space-y-3">
-              <div className="flex items-center justify-between gap-3">
-                <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-[var(--color-text-tertiary)]">
-                  <ShieldAlert className="h-3 w-3" />
-                  Open findings
-                </span>
-                <a
-                  href={`${reportHref}?tab=triage`}
-                  className="text-sm font-bold tabular-nums text-[var(--color-text-primary)] hover:text-[var(--color-accent-primary)] transition-colors"
-                >
-                  {data.open_findings.toLocaleString()}
-                </a>
-              </div>
+              <a
+                href={`${reportHref}?tab=triage`}
+                className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-[var(--color-text-tertiary)] hover:text-[var(--color-accent-primary)] transition-colors"
+              >
+                <ShieldAlert className="h-3 w-3" />
+                Open findings
+              </a>
 
               {severityTotal > 0 ? (
-                <>
-                  <div className="flex h-2 w-full overflow-hidden rounded-full bg-[var(--color-bg-inset)]">
-                    {severities.map((s) => (
-                      <div
-                        key={s.key}
-                        className="h-full"
-                        style={{ width: `${(s.count / severityTotal) * 100}%`, background: s.color }}
-                        title={`${s.count} ${s.key}`}
-                      />
-                    ))}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                <div className="flex items-center gap-4">
+                  <SeverityDonut
+                    segments={severities}
+                    total={severityTotal}
+                    count={data.open_findings}
+                  />
+                  <div className="flex flex-col gap-1">
                     {severities.map((s) => (
                       <span
                         key={s.key}
-                        className="flex items-center gap-1.5 text-[11px] text-[var(--color-text-secondary)] capitalize"
+                        className="flex items-center gap-1.5 text-xs text-[var(--color-text-secondary)] capitalize"
                       >
                         <span className="h-2 w-2 rounded-full" style={{ background: s.color }} />
                         {s.key}
@@ -273,9 +323,9 @@ export function HealthOverviewCard({
                       </span>
                     ))}
                   </div>
-                </>
+                </div>
               ) : (
-                <p className="text-[11px] text-[var(--color-success)]">No open findings — clean bill of health.</p>
+                <p className="text-xs text-[var(--color-success)]">No open findings — clean bill of health.</p>
               )}
 
               {data.worst_performer_path && data.worst_performer_score != null && (
@@ -288,12 +338,12 @@ export function HealthOverviewCard({
                     <span className="text-[10px] uppercase tracking-wider text-[var(--color-text-tertiary)] shrink-0">
                       Worst file
                     </span>
-                    <span className="truncate font-mono text-[11px] text-[var(--color-text-secondary)] group-hover:text-[var(--color-accent-primary)] transition-colors">
+                    <span className="truncate font-mono text-xs text-[var(--color-text-secondary)] group-hover:text-[var(--color-accent-primary)] transition-colors">
                       {truncatePath(data.worst_performer_path, 40)}
                     </span>
                   </span>
                   <span
-                    className="shrink-0 text-[11px] font-bold tabular-nums"
+                    className="shrink-0 text-xs font-bold tabular-nums"
                     style={{ color: band(data.worst_performer_score).color }}
                   >
                     {data.worst_performer_score.toFixed(1)}/10

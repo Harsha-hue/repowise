@@ -84,7 +84,7 @@ export function DistillSavingsCard({ data }: DistillSavingsCardProps) {
       <Card>
         <CardContent className="py-8">
           <div className="flex items-center gap-3">
-            <Scissors className="h-5 w-5 shrink-0 text-cyan-500" />
+            <Scissors className="h-5 w-5 shrink-0 text-[var(--color-savings-distill)]" />
             <div>
               <p className="text-sm font-medium text-[var(--color-text-primary)]">
                 No agent token savings recorded yet
@@ -127,14 +127,14 @@ export function DistillSavingsCard({ data }: DistillSavingsCardProps) {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-[var(--color-text-tertiary)]">
-              <Sparkles className="h-3.5 w-3.5 text-cyan-500" />
+              <Sparkles className="h-3.5 w-3.5 text-[var(--color-savings-distill)]" />
               Tokens saved for your agent
             </div>
             <div className="mt-1 flex items-baseline gap-3">
               <span className="text-4xl font-semibold tabular-nums text-[var(--color-text-primary)]">
                 {formatTokens(total)}
               </span>
-              <span className="text-2xl font-semibold tabular-nums text-green-500">
+              <span className="text-2xl font-semibold tabular-nums text-[var(--color-success)]">
                 {formatCost(data.estimated_usd_saved)}
               </span>
             </div>
@@ -158,7 +158,7 @@ export function DistillSavingsCard({ data }: DistillSavingsCardProps) {
               <div className="text-lg font-semibold tabular-nums text-[var(--color-text-primary)]">
                 {formatTokens(distillSaved)}
               </div>
-              <div className="text-[11px] text-[var(--color-text-tertiary)]">
+              <div className="text-xs text-[var(--color-text-tertiary)]">
                 distill · {data.events.toLocaleString()} event{data.events === 1 ? "" : "s"}
               </div>
             </div>
@@ -166,7 +166,7 @@ export function DistillSavingsCard({ data }: DistillSavingsCardProps) {
               <div className="text-lg font-semibold tabular-nums text-[var(--color-text-primary)]">
                 {formatTokens(mcpSaved)}
               </div>
-              <div className="text-[11px] text-[var(--color-text-tertiary)]">{mcpCaption}</div>
+              <div className="text-xs text-[var(--color-text-tertiary)]">{mcpCaption}</div>
             </div>
           </div>
         </div>
@@ -175,25 +175,25 @@ export function DistillSavingsCard({ data }: DistillSavingsCardProps) {
         <div className="mt-4 flex h-2.5 w-full overflow-hidden rounded-full bg-[var(--color-bg-inset)]">
           {distillSaved > 0 && (
             <div
-              className="h-full bg-cyan-500"
+              className="h-full bg-[var(--color-savings-distill)]"
               style={{ width: `${distillPct}%` }}
               title={`Distill — ${formatTokens(distillSaved)} (${distillPct}%)`}
             />
           )}
           {mcpSaved > 0 && (
             <div
-              className="h-full bg-violet-500"
+              className="h-full bg-[var(--color-savings-mcp)]"
               style={{ width: `${mcpPct}%` }}
               title={`MCP tools — ${formatTokens(mcpSaved)} (${mcpPct}%)`}
             />
           )}
         </div>
-        <div className="mt-1.5 flex items-center gap-4 text-[11px] text-[var(--color-text-secondary)]">
+        <div className="mt-1.5 flex items-center gap-4 text-xs text-[var(--color-text-secondary)]">
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-cyan-500" /> Distill {distillPct}%
+            <span className="h-2 w-2 rounded-full bg-[var(--color-savings-distill)]" /> Distill {distillPct}%
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-violet-500" /> MCP tools {mcpPct}%
+            <span className="h-2 w-2 rounded-full bg-[var(--color-savings-mcp)]" /> MCP tools {mcpPct}%
           </span>
         </div>
 
@@ -207,7 +207,7 @@ export function DistillSavingsCard({ data }: DistillSavingsCardProps) {
                 tokens: f.saved_tokens,
               }))}
               max={distillSaved}
-              barClass="bg-cyan-500"
+              barClass="bg-[var(--color-savings-distill)]"
             />
           )}
           {topTools.length > 0 && (
@@ -215,7 +215,7 @@ export function DistillSavingsCard({ data }: DistillSavingsCardProps) {
               title="MCP — by tool"
               rows={topTools.map((t) => ({ label: t.tool, tokens: t.tokens }))}
               max={mcpSaved}
-              barClass="bg-violet-500"
+              barClass="bg-[var(--color-savings-mcp)]"
             />
           )}
         </div>
@@ -226,11 +226,11 @@ export function DistillSavingsCard({ data }: DistillSavingsCardProps) {
             href={DISTILL_DOCS}
             target="_blank"
             rel="noreferrer"
-            className="mt-5 flex items-center gap-3 rounded-lg border border-amber-500/30 bg-amber-500/5 px-3 py-2.5 transition-colors hover:bg-amber-500/10"
+            className="mt-5 flex items-center gap-3 rounded-lg border border-[var(--color-warning)]/30 bg-[var(--color-warning)]/5 px-3 py-2.5 transition-colors hover:bg-[var(--color-warning)]/10"
           >
-            <Zap className="h-4 w-4 shrink-0 text-amber-500" />
+            <Zap className="h-4 w-4 shrink-0 text-[var(--color-warning)]" />
             <div className="text-xs text-[var(--color-text-secondary)]">
-              <span className="font-medium text-amber-500">
+              <span className="font-medium text-[var(--color-warning)]">
                 Unlock ~{formatTokens(data.missed_tokens_est ?? 0)} more
               </span>{" "}
               — {(data.missed_events ?? 0).toLocaleString()} raw command
@@ -240,7 +240,7 @@ export function DistillSavingsCard({ data }: DistillSavingsCardProps) {
           </a>
         )}
 
-        <p className="mt-3 text-[10px] leading-snug text-[var(--color-text-tertiary)]">
+        <p className="mt-3 text-xs leading-snug text-[var(--color-text-tertiary)]">
           Distill counts <code>repowise distill</code> command/hook savings; MCP counts the raw
           file exploration each tool answer replaced (plus any over-budget content trimmed). Saved
           tokens are agent input, priced at the agent&apos;s input rate. Everything stays on this
@@ -269,7 +269,7 @@ function SurfaceDetail({
 }) {
   return (
     <div className="space-y-1.5">
-      <div className="text-[11px] font-medium uppercase tracking-wide text-[var(--color-text-tertiary)]">
+      <div className="text-xs font-medium uppercase tracking-wide text-[var(--color-text-tertiary)]">
         {title}
       </div>
       {rows.map((row) => {

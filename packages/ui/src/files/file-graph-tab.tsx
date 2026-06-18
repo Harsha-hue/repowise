@@ -1,6 +1,7 @@
 import { Network } from "lucide-react";
 import { EmptyState } from "../shared/empty-state";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { StatGrid, StatTile } from "../shared/stat-grid";
 import { truncatePath } from "../lib/format";
 import type { FileDetailGraph, FileGraphNeighbor } from "@repowise-dev/types/files";
 
@@ -39,7 +40,7 @@ function NeighborList({
         {neighbors.length === 0 ? (
           <p className="text-xs text-[var(--color-text-tertiary)]">None in the indexed graph.</p>
         ) : (
-          <ul className="space-y-1">
+          <ul className="space-y-2">
             {neighbors.map((n) => {
               const isSymbol = n.node_type === "symbol" || n.node_id.includes("::");
               const href = isSymbol ? symbolHref(n.node_id) : fileHref(n.node_id);
@@ -47,9 +48,9 @@ function NeighborList({
                 <li key={`${n.node_id}-${n.edge_type}`}>
                   <a
                     href={href}
-                    className="flex items-center gap-2 -mx-2 px-2 py-0.5 rounded hover:bg-[var(--color-bg-elevated)] transition-colors"
+                    className="flex items-center gap-2 -mx-2 px-2 py-1 rounded hover:bg-[var(--color-bg-elevated)] transition-colors"
                   >
-                    <span className="text-[11px] font-mono text-[var(--color-text-primary)] truncate flex-1 min-w-0">
+                    <span className="font-mono text-xs text-[var(--color-text-primary)] truncate flex-1 min-w-0" title={n.node_id}>
                       {truncatePath(n.node_id, 48)}
                     </span>
                     <span className="text-[10px] text-[var(--color-text-tertiary)] shrink-0">
@@ -88,17 +89,17 @@ export function FileGraphTab({ graph, filePath, linkPrefix, fileHref, symbolHref
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat
+      <StatGrid columns={4}>
+        <StatTile
           label="PageRank"
           value={`${Math.round(graph.pagerank_percentile)}th pct`}
           hint={graph.pagerank.toFixed(6)}
         />
-        <Stat label="Dependents (in)" value={String(graph.in_degree)} />
-        <Stat label="Dependencies (out)" value={String(graph.out_degree)} />
-        <Stat label="Community" value={graph.community_label ?? `#${graph.community_id}`} />
-      </div>
-      <div className="flex flex-wrap gap-2 text-[11px]">
+        <StatTile label="Dependents (in)" value={String(graph.in_degree)} />
+        <StatTile label="Dependencies (out)" value={String(graph.out_degree)} />
+        <StatTile label="Community" value={graph.community_label ?? `#${graph.community_id}`} />
+      </StatGrid>
+      <div className="flex flex-wrap gap-3 text-xs">
         <a
           href={`${linkPrefix}/architecture?view=graph&node=${encodeURIComponent(filePath)}`}
           className="text-[var(--color-accent-primary)] hover:underline"
@@ -126,19 +127,6 @@ export function FileGraphTab({ graph, filePath, linkPrefix, fileHref, symbolHref
           symbolHref={symbolHref}
         />
       </div>
-    </div>
-  );
-}
-
-function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
-  return (
-    <div className="rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-2.5">
-      <p className="text-[10px] uppercase tracking-wider text-[var(--color-text-tertiary)] mb-0.5">
-        {label}
-      </p>
-      <p className="text-sm font-semibold text-[var(--color-text-primary)]" title={hint}>
-        {value}
-      </p>
     </div>
   );
 }

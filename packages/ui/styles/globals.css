@@ -103,7 +103,7 @@
   --color-success: #1d8155;
   --color-warning: #9a6614;
   --color-error: #b23a2e;
-  --color-info: #58436c;
+  --color-info: #3f6ea5; /* muted blue — distinct from the plum accent-secondary */
   --color-caution: #a8821f; /* between warning and success; medium severity / fair score band */
 
   /* Aliases — short names used in component class strings. Keep in sync. */
@@ -189,6 +189,12 @@
   --color-viz-diff-changed: var(--color-error);
   --color-viz-diff-affected: var(--color-warning);
 
+  /* Savings surfaces — two categorical hues distinguishing the distill ledger
+     from MCP-tool answers in the Costs savings card. Plum + brand-orange so the
+     split reads in both themes without a third brand color. */
+  --color-savings-distill: var(--color-accent-fill);
+  --color-savings-mcp: var(--color-accent-secondary);
+
   /* ================================================================== */
   /* Signature gradients (theme-independent)                            */
   /* ================================================================== */
@@ -213,6 +219,9 @@
   --shadow-lg: 0 8px 24px rgba(36, 27, 44, 0.1), 0 2px 6px rgba(36, 27, 44, 0.06);
   --shadow-xl: 0 16px 48px rgba(36, 27, 44, 0.14), 0 4px 12px rgba(36, 27, 44, 0.08);
   --shadow-button: 0 1px 2px rgba(214, 127, 16, 0.22);
+
+  /* Card elevation dial: flat by default, flip to a shadow token to float. */
+  --card-shadow: none;
 
   /* ================================================================== */
   /* Non-color tokens (theme-independent)                               */
@@ -245,6 +254,10 @@
   --spacing-10: 2.5rem;
   --spacing-12: 3rem;
   --spacing-16: 4rem;
+
+  /* Page-level rhythm: outer padding + gap between major sections. */
+  --page-pad: var(--spacing-6);
+  --section-gap: var(--spacing-6);
 
   --radius-sm: 6px;
   --radius-md: 8px;
@@ -310,7 +323,7 @@
   --color-success: #34d399;
   --color-warning: #f2a03d;
   --color-error: #e06a5a;
-  --color-info: #a98fc4;
+  --color-info: #7da7d9; /* muted blue — distinct from the plum accent-secondary */
   --color-caution: #d9b04a;
 
   --color-node-undocumented: #6f6678;
